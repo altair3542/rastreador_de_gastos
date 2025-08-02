@@ -19,7 +19,7 @@ export default function AddExpenseScreen({ navigation }) {
         return;
       }
       // Si pasa las validaciones:
-      const newEspense = {
+      const newExpense = {
         id: Date.now().toString(),
         amount: Number(amount),
         category,

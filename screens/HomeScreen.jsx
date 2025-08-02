@@ -3,11 +3,11 @@ import React from 'react'
 
 export default function HomeScreen() {
   return (
-    <View {styles.container}>
-      <Text styles={styles.title}>
+    <View style={styles.container}>
+      <Text style={styles.title}>
         Bienvenidos al Gestor de Gastos.
       </Text>
-      <Text styles={styles.subtitle}>
+      <Text style={styles.subtitle}>
         Aqui podras llevar el control de tus gastos
       </Text>
     </View>

@@ -4,8 +4,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 // Importamos las pantallas que creamos
-import HomeScreen from './src/screens/HomeScreen';
-import AddExpenseScreen from './src/screens/AddExpenseScreen';
+import HomeScreen from './screens/HomeScreen';
+import AddExpenseScreen from './screens/AddExpenseScreen';
 
 // Creamos el stack navigator
 const Stack = createStackNavigator();

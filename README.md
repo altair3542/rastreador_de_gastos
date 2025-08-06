@@ -41,6 +41,16 @@ Si quieres crear una nueva copia del proyecto sin usar comandos de Git, puedes i
    npx expo start
    ```
 
+## Consideraciones para Windows PowerShell
+
+- En algunas máquinas puede haber restricciones de **Execution Policy** que impiden ejecutar scripts (`npx`, `npm`).
+
+- Si recibes un error como _“execution of scripts is disabled on this system”_, abre PowerShell **como Administrador** y ejecuta:
+
+  ```powershell
+  Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force
+  ```
+
 ## Estructura básica del proyecto
 
 - `App.js`: punto de entrada principal que carga la pantalla `HomeScreen`.

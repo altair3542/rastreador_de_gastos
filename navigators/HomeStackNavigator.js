@@ -1,7 +1,5 @@
 //En este archivo configuramos el Stack Navigator para gestionar la navegación de las pantallas relacionadas con los gastos (Home, Añadir Gasto, Detalles).
 
-
-// src/navigators/HomeStackNavigator.js
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from '../screens/HomeScreen';

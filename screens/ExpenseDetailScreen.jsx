@@ -1,72 +1,72 @@
-// src/screens/HomeScreen.js
 import React from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-  TouchableOpacity,
-  Button,
-} from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
 /**
- * HomeScreen
- * - Muestra la lista de gastos
- * - Permite navegar al detalle de cada gasto
+ * ExpenseDetailScreen
+ * Muestra el detalle de un gasto.
  *
- * @param {object} navigation - para cambiar de pantalla
- * @param {Array} expenses     - array de objetos gasto
+ * Recibe vía route.params:
+ *  - id: string
+ *  - amount: number
+ *  - category: string
+ *  - description: string
+ *  - date: string | number | Date
  */
-export default function HomeScreen({ navigation, expenses }) {
+export default function ExpenseDetailScreen({ route }) {
+  // Tomamos los datos que mandamos desde HomeScreen (navigation.navigate('ExpenseDetail', { ...item }))
+  const { id, amount, category, description, date } = route.params;
+
+  // Helpers simples para formato
+  const formatMoney = (n) => {
+    if (typeof n !== 'number') return String(n);
+    return `$${n.toFixed(2)}`;
+  };
+
+  const formatDateTime = (d) => {
+    try {
+      return new Date(d).toLocaleString();
+    } catch {
+      return String(d);
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>🚀 Expense Tracker</Text>
-      <Text style={styles.subtitle}>Lleva el control de tus gastos</Text>
+      <Text style={styles.title}>Detalle del gasto</Text>
 
-      <Button
-        title="Agregar Gasto"
-        onPress={() => navigation.navigate('AddExpense')}
-      />
+      <InfoRow label="ID" value={id} />
+      <InfoRow label="Monto" value={formatMoney(amount)} />
+      <InfoRow label="Categoría" value={category} />
+      <InfoRow label="Descripción" value={description} />
+      <InfoRow label="Fecha" value={formatDateTime(date)} />
 
-      {expenses.length === 0 ? (
-        <Text>No hay gastos registrados.</Text>
-      ) : (
-        <FlatList
-          data={expenses}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.item}
-              onPress={() =>
-                navigation.navigate('ExpenseDetail', { ...item })
-              }
-            >
-              <Text style={styles.itemText}>
-                {item.description} ({item.category})
-              </Text>
-              <Text style={styles.amount}>
-                ${item.amount.toFixed(2)}
-              </Text>
-            </TouchableOpacity>
-          )}
-          style={styles.list}
-        />
-      )}
+      {/* Si más adelante quieres acciones aquí (editar/eliminar),
+          puedes pasarlas por props o route.params y renderizarlas aquí. */}
+    </View>
+  );
+}
+
+/**
+ * Componente pequeño para filas de información (etiqueta + valor)
+ */
+function InfoRow({ label, value }) {
+  return (
+    <View style={styles.row}>
+      <Text style={styles.label}>{label}</Text>
+      <Text style={styles.value}>{String(value)}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: '#fff' },
-  title: { fontSize: 26, fontWeight: 'bold', marginBottom: 5 },
-  subtitle: { fontSize: 16, marginBottom: 15 },
-  item: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 12,
+  title: { fontSize: 20, fontWeight: 'bold', marginBottom: 12 },
+  row: {
+    marginBottom: 12,
+    paddingBottom: 12,
     borderBottomWidth: 1,
-    borderColor: '#eee',
+    borderBottomColor: '#eee',
   },
-  itemText: { fontSize: 16 },
-  amount: { fontSize: 16, fontWeight: 'bold' },
+  label: { fontSize: 12, color: '#666', marginBottom: 4 },
+  value: { fontSize: 16, color: '#111' },
 });

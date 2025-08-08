@@ -89,27 +89,3 @@ const styles = StyleSheet.create({
 });
 
 
-// //pantalla de origen
-// navigation.navigate('ExpenseDetail', { id, amount, category, description, date })
-
-
-// // En la pantalla de destino (ExpenseDetailScreen), puedes acceder a estos parámetros mediante route.params:
-
-// function ExpenseDetailScreen({ route }) {
-//   const { id, amount, description, date } = route.params
-// }
-
-
-// ejemplo de personalizacion.
-// options={({ route, navigation }) => ({
-//   headerTitle: `Gasto #${route.params.id}`,
-//   headerRight: () => (
-//     <Button
-//       title="Eliminar"
-//       onPress={() => {
-//         // Lógica para eliminar
-//         navigation.goBack();
-//       }}
-//     />
-//   ),
-// })}

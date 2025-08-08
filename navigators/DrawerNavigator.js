@@ -1,27 +1,35 @@
-// configurar este navegador para gestionar las pantallas gobales de la app.
+// src/navigators/DrawerNavigator.js
+import React from 'react';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import HomeStackNavigator from './HomeStackNavigator';
+import SettingsScreen from '../screens/SettingsScreen';
 
-import React from 'react'
-import { createDrawerNavigator } from '@react-navigation/drawer'
-import HomeStackNavigator from './HomeStackNavigator' // importamos el stack para poderlo anidar con los gastos
-import SettingsScreen from '../screens/SettingsScreen'
+const Drawer = createDrawerNavigator();
 
-const Drawer = createDrawerNavigator()
-
-export default function DrawerNavigator() {
+export default function DrawerNavigator({ expenses, onAddExpense, onDeleteExpense }) {
   return (
-    <Drawer.Navigator initialRouteName='HomeStack'>
-      {/* Pantalla HomeStack que gestiona los gastos */}
+    <Drawer.Navigator
+      initialRouteName="HomeStack"
+      screenOptions={{
+        // <-- desactiva el header que dibuja el Drawer
+      headerShown: false,
+      }}
+    >
+      <Drawer.Screen name="HomeStack" options={{ title: 'Inicio' }}>
+        {props => (
+          <HomeStackNavigator
+            {...props}
+            expenses={expenses}
+            onAddExpense={onAddExpense}
+            onDeleteExpense={onDeleteExpense}
+          />
+        )}
+      </Drawer.Screen>
       <Drawer.Screen
-        name='HomeStack'
-        component={HomeStackNavigator}
-        options={{ title: 'Incio' }}
-      />
-      {/* Pantalla de configuración */}
-      <Drawer.Screen
-        name='Settings'
+        name="Settings"
         component={SettingsScreen}
-        options={{ title: 'Configuracion'}}
+        options={{ title: 'Configuración' }}
       />
     </Drawer.Navigator>
-  )
+  );
 }

@@ -1,3 +1,5 @@
+// src/screens/HomeScreen.js
+
 import React from 'react';
 import {
   View,
@@ -5,16 +7,62 @@ import {
   FlatList,
   StyleSheet,
   Button,
+  TouchableOpacity,
 } from 'react-native';
 
 /**
- * HomeScreen
- * Muestra la lista de gastos y permite navegar al formulario para agregar uno nuevo.
- *
- * @param {object} navigation - Prop de React Navigation para gestionar rutas.
- * @param {Array} expenses - Array de objetos gasto.
+ * @typedef {Object} Expense
+ * @property {string} id
+ * @property {number} amount
+ * @property {string} category
+ * @property {string} description
+ * @property {Date|string|number} date
  */
-export default function HomeScreen({ navigation, expenses }) {
+
+/**
+ * HomeScreen
+ * - Muestra la lista de gastos
+ * - Navega al formulario para agregar uno nuevo
+ * - Permite abrir el detalle de cada gasto al tocar un ítem
+ *
+ * @param {object} props
+ * @param {import('@react-navigation/native').NavigationProp<any>} props.navigation
+ * @param {Expense[]} [props.expenses=[]] - Array de gastos
+ */
+export default function HomeScreen({ navigation, expenses = [] }) {
+  // Formatea el monto con fallback si Intl no está disponible en el runtime
+  const formatMoney = (n) => {
+    if (typeof n !== 'number') return String(n);
+    try {
+      return new Intl.NumberFormat('es-CO', {
+        style: 'currency',
+        currency: 'COP',
+        maximumFractionDigits: 0,
+      }).format(n);
+    } catch {
+      return `$${n.toFixed(2)}`;
+    }
+  };
+
+  // Render de cada fila de gasto. Al tocar, navega a ExpenseDetail con todos los params necesarios
+  const renderItem = ({ item }) => (
+    <TouchableOpacity
+      style={styles.item}
+      activeOpacity={0.7}
+      onPress={() => navigation.navigate('ExpenseDetail', { ...item })}
+    >
+      {/* Descripción y categoría del gasto */}
+      <Text style={styles.itemText}>
+        {item.description} ({item.category})
+      </Text>
+
+      {/* Monto formateado */}
+      <Text style={styles.amount}>
+        {formatMoney(item.amount)}
+      </Text>
+    </TouchableOpacity>
+  );
+
   return (
     <View style={styles.container}>
       {/* Título principal */}
@@ -29,36 +77,27 @@ export default function HomeScreen({ navigation, expenses }) {
         onPress={() => navigation.navigate('AddExpense')}
       />
 
-      {/* Si no hay gastos, mostramos un mensaje */}
+      {/* Lista / estado vacío */}
       {expenses.length === 0 ? (
         <Text style={styles.noExpenses}>
           No hay gastos registrados.
         </Text>
       ) : (
-        /* Lista de gastos usando FlatList para mejor performance */
         <FlatList
+          style={styles.list}
           data={expenses}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View style={styles.item}>
-              {/* Descripción y categoría del gasto */}
-              <Text style={styles.itemText}>
-                {item.description} ({item.category})
-              </Text>
-              {/* Monto formateado */}
-              <Text style={styles.amount}>
-                ${item.amount.toFixed(2)}
-              </Text>
-            </View>
-          )}
-          style={styles.list}
+          renderItem={renderItem}
+          // Opcional: mejora de performance
+          initialNumToRender={10}
+          windowSize={11}
+          removeClippedSubviews
         />
       )}
     </View>
   );
 }
 
-// Estilos locales para HomeScreen
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -92,6 +131,8 @@ const styles = StyleSheet.create({
   },
   itemText: {
     fontSize: 16,
+    flexShrink: 1,
+    paddingRight: 8,
   },
   amount: {
     fontSize: 16,

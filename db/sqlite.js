@@ -1,41 +1,22 @@
-// Utilidad de SQLite y las migraciones que deba generar.
+import { exec } from '../db/sqlite';
 
-import * as SQLite from 'expo-sqlite'
+export async function listExpenses() {
+  const res = await exec(
+    'SELECT id, description, category, amount, date FROM expenses ORDER BY date DESC;'
+  );
+  return res.rows?._array ?? [];
+}
 
-export const db = SQLite.openDatabase('expenses.db')
+export async function insertExpense({ id, description, category, amount, date }) {
+  const _id = id ?? Date.now().toString();
+  const ts = typeof date === 'number' ? date : new Date(date ?? Date.now()).getTime();
+  await exec(
+    'INSERT INTO expenses (id, description, category, amount, date) VALUES (?,?,?,?,?);',
+    [_id, description, category, amount, ts]
+  );
+  return { id: _id, description, category, amount, date: ts };
+}
 
-
-export function exec(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    db.transaction(
-      tx => {
-        tx.executeSql(
-          sql,
-          params,
-          (_, res) => resolve(res),
-          (_, err) => { reject(err); return true; }
-        );
-      },
-      err => reject(err)
-    );
-  });
-
-export async function migrate() {
-  // Esquema base
-  await exec(`
-    CREATE TABLE IF NOT EXISTS expenses (
-      id TEXT PRIMARY KEY NOT NULL,
-      description TEXT NOT NULL,
-      category TEXT NOT NULL,
-      amount REAL NOT NULL,
-      date INTEGER NOT NULL
-    );
-  `);
-
-  //Indices recomendados
-  await exec(`CREATE INDEX IF NOT EXISTS idx_expenses_date ON expenses(date);`)
-  await exec(`CREATE INDEX IF NOT EXISTS idx_expenses_category ON expenses(category);`)
-  }
-
-
+export async function deleteExpense(id) {
+  await exec('DELETE FROM expenses WHERE id = ?;', [id]);
 }

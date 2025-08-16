@@ -1,91 +1,38 @@
-// Formularios en react native dependen directamente de un estado para cada dato que deseemos capturar.
-
+// src/screens/AddExpenseScreen.js
 import React, { useState } from 'react';
-import {
-  View,
-  Button,
-  Alert,
-  StyleSheet,
-} from 'react-native';
-
+import { View, Button, Alert, StyleSheet } from 'react-native';
 import FormInput from '../components/FormInput';
+import { useExpenses } from '../context/ExpensesContext';
 
-/**
- * AddExpenseScreen
- * Pantalla con formulario para capturar un nuevo gasto.
- *
- * @param {object} navigation - Prop de navegación para volver atrás.
- * @param {function} onAddExpense - Callback para añadir el gasto al estado global.
- */
-export default function AddExpenseScreen({ navigation, onAddExpense }) {
-  // Estados locales para cada campo del formulario
+export default function AddExpenseScreen({ navigation }) {
+  const { addExpense } = useExpenses();
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
 
-  /**
-   * handleSubmit
-   * Valida campos, construye el objeto gasto y lo envía.
-   */
-  const handleSubmit = () => {
-    // Validación del monto: obligatorio, numérico y > 0
+  const handleSubmit = async () => {
     if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
-      Alert.alert('Error', 'Ingresa un monto válido.');
-      return;
+      Alert.alert('Error', 'Ingresa un monto válido.'); return;
     }
-    // Validación de texto: category y description no deben estar vacíos
     if (!category.trim() || !description.trim()) {
-      Alert.alert('Error', 'Todos los campos son obligatorios.');
-      return;
+      Alert.alert('Error', 'Todos los campos son obligatorios.'); return;
     }
-
-    // Construimos el objeto de gasto
-    const newExpense = {
-      id: Date.now().toString(),       // ID único basado en timestamp
-      amount: Number(amount),          // Convertimos a número
-      category,                        // Categoría en texto
-      description,                     // Descripción del gasto
-      date: new Date(),                // Fecha de creación
-    };
-
-    // Llamamos al callback para añadir al estado global
-    onAddExpense(newExpense);
-    // Navegamos de vuelta a la pantalla anterior
-    navigation.goBack();
+    try {
+      await addExpense({ description: description.trim(), category: category.trim(), amount: Number(amount), date: Date.now() });
+      navigation.goBack();
+    } catch {
+      Alert.alert('Error', 'No fue posible guardar el gasto.');
+    }
   };
 
   return (
     <View style={styles.container}>
-      {/* Reutilizamos el componente FormInput para cada campo */}
-      <FormInput
-        placeholder="Monto"
-        keyboardType="numeric"
-        value={amount}
-        onChangeText={setAmount}
-      />
-      <FormInput
-        placeholder="Categoría"
-        value={category}
-        onChangeText={setCategory}
-      />
-      <FormInput
-        placeholder="Descripción"
-        value={description}
-        onChangeText={setDescription}
-      />
-      {/* Botón para enviar el formulario */}
+      <FormInput placeholder="Monto" keyboardType="numeric" value={amount} onChangeText={setAmount} />
+      <FormInput placeholder="Categoría" value={category} onChangeText={setCategory} />
+      <FormInput placeholder="Descripción" value={description} onChangeText={setDescription} />
       <Button title="Guardar gasto" onPress={handleSubmit} />
     </View>
   );
 }
-
-// Estilos locales para AddExpenseScreen
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
-  },
-});
-
+const styles = StyleSheet.create({ container: { flex:1, padding:20, backgroundColor:'#fff' } });
 

@@ -2,7 +2,7 @@
 
 // crud minimo: listar, insertar, eliminar registros.
 
-import { exec } from '../db/sqlite'
+import { exec } from '../db/sqlite';
 
 export async function listExpenses() {
   const res = await exec(
